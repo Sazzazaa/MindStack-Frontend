@@ -1,5 +1,3 @@
-Dưới đây là bản thảo **README.md** chuyên nghiệp bằng tiếng Anh dành riêng cho phần Frontend của đồ án MindStack, dựa trên cấu trúc các tệp tin và công nghệ mà bạn đang sử dụng:
-
 ```markdown
 # MindStack Frontend
 

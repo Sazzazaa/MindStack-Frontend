@@ -20,7 +20,7 @@ const getGoogleAuthErrorMessage = (error: any): string => {
     case "auth/popup-blocked":
       return "Popup bị chặn. Vui lòng cho phép popup và thử lại"
     case "auth/unauthorized-domain":
-      return "Domain hiện tại chưa được cấu hình trong Firebase Authorized domains"
+      return "Không thể đăng nhập bằng Google. Vui lòng thử lại"
     case "auth/network-request-failed":
       return "Lỗi mạng khi kết nối Google. Vui lòng kiểm tra internet và thử lại"
     case "auth/operation-not-allowed":

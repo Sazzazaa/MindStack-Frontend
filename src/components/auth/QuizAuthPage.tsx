@@ -11,6 +11,8 @@ import { authAPI } from "../../services/api"
 import { LoginDto, RegisterDto } from "../../types/types"
 import { useNavigate } from "react-router-dom"
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:3000").replace(/\/$/, "")
+
 export default function QuizAuthPage() {
   const navigate = useNavigate()
   const [isLogin, setIsLogin] = useState(true)
@@ -84,7 +86,7 @@ export default function QuizAuthPage() {
       const idToken = await user.getIdToken()
       
       // Send token to backend for verification and user creation/login
-      const response = await fetch('http://localhost:3000/auth/google', {
+      const response = await fetch(`${API_BASE_URL}/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -13,6 +13,23 @@ import { useNavigate } from "react-router-dom"
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:3000").replace(/\/$/, "")
 
+const getGoogleAuthErrorMessage = (error: any): string => {
+  switch (error?.code) {
+    case "auth/popup-closed-by-user":
+      return "Đăng nhập Google bị hủy"
+    case "auth/popup-blocked":
+      return "Popup bị chặn. Vui lòng cho phép popup và thử lại"
+    case "auth/unauthorized-domain":
+      return "Domain hiện tại chưa được cấu hình trong Firebase Authorized domains"
+    case "auth/network-request-failed":
+      return "Lỗi mạng khi kết nối Google. Vui lòng kiểm tra internet và thử lại"
+    case "auth/operation-not-allowed":
+      return "Google Sign-In chưa được bật trong Firebase Authentication"
+    default:
+      return "Không thể đăng nhập bằng Google. Vui lòng thử lại"
+  }
+}
+
 export default function QuizAuthPage() {
   const navigate = useNavigate()
   const [isLogin, setIsLogin] = useState(true)
@@ -101,7 +118,19 @@ export default function QuizAuthPage() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to authenticate with backend')
+        let backendMessage = "Xác thực với backend thất bại"
+        try {
+          const errorData = await response.json()
+          if (errorData?.message) {
+            backendMessage = Array.isArray(errorData.message)
+              ? errorData.message.join(", ")
+              : errorData.message
+          }
+        } catch {
+          // Keep default message when response body is not JSON
+        }
+
+        throw new Error(backendMessage)
       }
 
       const data = await response.json()
@@ -120,10 +149,11 @@ export default function QuizAuthPage() {
 
     } catch (error: any) {
       console.error('[AUTH] Google sign-in error:', error)
-      if (error.code === 'auth/popup-closed-by-user') {
-        setError("Đăng nhập Google bị hủy")
-      } else if (error.code === 'auth/popup-blocked') {
-        setError("Popup bị chặn. Vui lòng cho phép popup và thử lại")
+
+      if (error?.code?.startsWith("auth/")) {
+        setError(getGoogleAuthErrorMessage(error))
+      } else if (error instanceof Error) {
+        setError(error.message)
       } else {
         setError("Không thể đăng nhập bằng Google. Vui lòng thử lại")
       }

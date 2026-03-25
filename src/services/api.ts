@@ -28,6 +28,7 @@ import {
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const IS_NGROK_TUNNEL = /\.ngrok(-free)?\./i.test(API_BASE_URL);
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -41,6 +42,10 @@ const api: AxiosInstance = axios.create({
 // Request interceptor for adding auth token and logging
 api.interceptors.request.use(
   (config) => {
+    if (IS_NGROK_TUNNEL) {
+      config.headers['ngrok-skip-browser-warning'] = 'true';
+    }
+
     console.log('[API] Request:', {
       method: config.method?.toUpperCase(),
       url: config.url,

@@ -12,6 +12,7 @@ import { LoginDto, RegisterDto } from "../../types/types"
 import { useNavigate } from "react-router-dom"
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:3000").replace(/\/$/, "")
+const IS_NGROK_TUNNEL = /\.ngrok(-free)?\./i.test(API_BASE_URL)
 
 const getGoogleAuthErrorMessage = (error: any): string => {
   switch (error?.code) {
@@ -107,7 +108,8 @@ export default function QuizAuthPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          'Authorization': `Bearer ${idToken}`,
+          ...(IS_NGROK_TUNNEL ? { 'ngrok-skip-browser-warning': 'true' } : {})
         },
         body: JSON.stringify({
           idToken: idToken,
